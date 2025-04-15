@@ -44,6 +44,8 @@ program
     .option('--port <port>', 'Port to listen on for SSE transport.')
     .option('--user-data-dir <path>', 'Path to the user data directory')
     .option('--vision', 'Run server that uses screenshots (Aria snapshots are used by default)')
+    .option('--viewport-size <size>', 'Browser viewport size in format "width,height". Example: 1280, 720')
+    .option('--user-agent <string>', 'User Agent string to use')
     .action(async options => {
       let browserName: 'chromium' | 'firefox' | 'webkit';
       let channel: string | undefined;
@@ -79,12 +81,26 @@ program
         executablePath: options.executablePath,
       };
 
+      const contextOptions: any = {};
+
+      if (options.viewportSize) {
+        const [width, height] = options.viewportSize.split(',').map(Number);
+        if (!isNaN(width) && !isNaN(height)) {
+          contextOptions.viewport = { width, height };
+        }
+      }
+
+      if (options.userAgent) {
+        contextOptions.userAgent = options.userAgent;
+      }
+
       const userDataDir = options.userDataDir ?? await createUserDataDir(browserName);
 
       const serverList = new ServerList(() => createServer({
         browserName,
         userDataDir,
         launchOptions,
+        contextOptions,
         vision: !!options.vision,
         cdpEndpoint: options.cdpEndpoint,
         capabilities: options.caps?.split(',').map((c: string) => c.trim() as ToolCapability),

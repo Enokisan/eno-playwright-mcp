@@ -24,6 +24,7 @@ export type ContextOptions = {
   browserName?: 'chromium' | 'firefox' | 'webkit';
   userDataDir: string;
   launchOptions?: playwright.LaunchOptions;
+  contextOptions?: playwright.BrowserContextOptions;
   cdpEndpoint?: string;
   remoteEndpoint?: string;
 };
@@ -163,7 +164,10 @@ export class Context {
   private async _launchPersistentContext(): Promise<playwright.BrowserContext> {
     try {
       const browserType = this.options.browserName ? playwright[this.options.browserName] : playwright.chromium;
-      return await browserType.launchPersistentContext(this.options.userDataDir, this.options.launchOptions);
+      return await browserType.launchPersistentContext(this.options.userDataDir, {
+        ...this.options.launchOptions,
+        ...this.options.contextOptions,
+      });
     } catch (error: any) {
       if (error.message.includes('Executable doesn\'t exist'))
         throw new Error(`Browser specified in your config is not installed. Either install it (likely) or change the config.`);

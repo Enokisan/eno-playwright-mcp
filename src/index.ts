@@ -29,7 +29,7 @@ import { console as consoleResource } from './resources/console';
 import type { Tool, ToolCapability } from './tools/tool';
 import type { Resource } from './resources/resource';
 import type { Server } from '@modelcontextprotocol/sdk/server/index.js';
-import type { LaunchOptions } from 'playwright';
+import type { BrowserContextOptions, LaunchOptions } from 'playwright';
 
 const snapshotTools: Tool[] = [
   ...common(true),
@@ -61,6 +61,7 @@ type Options = {
   browserName?: 'chromium' | 'firefox' | 'webkit';
   userDataDir?: string;
   launchOptions?: LaunchOptions;
+  contextOptions?: BrowserContextOptions;
   cdpEndpoint?: string;
   vision?: boolean;
   capabilities?: ToolCapability[];
@@ -79,6 +80,7 @@ export function createServer(options?: Options): Server {
     browserName: options?.browserName,
     userDataDir: options?.userDataDir ?? '',
     launchOptions: options?.launchOptions,
+    contextOptions: options?.contextOptions,
     cdpEndpoint: options?.cdpEndpoint,
   });
 }
